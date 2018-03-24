@@ -1,5 +1,5 @@
 # Tetris_basic_implementation
-/n[UP ARROW] - clockwise rotation
+[UP ARROW] - clockwise rotation
 [DOWN ARROW] - move down
 [RIGHT ARROW] - move right
 [LEFT ARROW] = move left
