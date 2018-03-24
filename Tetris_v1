@@ -82,7 +82,7 @@ def collision_sides(list_of_cords, move, retire):
                         return False
     elif move == "up" and len(retire) == 0:
         for l in list_of_cords:
-            if l[0] <= 0 or l[0] >= 180:
+            if l[0] <= 0 or l[0] >= 180 or l[1] == 380:
                 return False
     elif move == "left" and len(retire) > 0:
         for i in retire:
@@ -136,10 +136,11 @@ def burn(retire):
 
 shapes = [ shape_p, shape_z, shape_horse, shape_b, shape_t]
 object_shape = random.choice(shapes)
-start_y = 0
+start_y = 20
 start_x = 100
 retire = []
 last_shape = []
+top_blocks = []
 
 while True:
 
@@ -163,7 +164,6 @@ while True:
             if event.key == pygame.K_DOWN:
                 if collision(retire, list_of_cords) == False:
                     retire.append(list_of_cords)
-                    prev_shape = object_shape
                     object_shape = random.choice(shapes)
                     start_y = 0
                     start_x = 100
@@ -175,7 +175,7 @@ while True:
             sys.exit()
 
         for i in list_of_cords:
-            if i in last_shape:
+            if i in top_blocks:
                 pygame.quit()
                 sys.exit()
 
@@ -183,7 +183,6 @@ while True:
 
     if collision(retire, list_of_cords) == False:
         retire.append(list_of_cords)
-        prev_shape = object_shape
         object_shape = random.choice(shapes)
         start_y = 0
         start_x = 100
@@ -192,9 +191,11 @@ while True:
 
     if len(retire) > 0:
         color = random.choice(colors)
+        top_blocks = []
         for i in burn(retire):
-            last_shape = i[:-1]
             for z in i:
+                if z[1] == 20:
+                    top_blocks.append(z)
                 pygame.draw.rect(display, color, (z[0], z[1], 20, 20))
 
     time.sleep(100 / 1000.0)
