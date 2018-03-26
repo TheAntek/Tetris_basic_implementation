@@ -3,14 +3,13 @@ from pygame.locals import*
 import random
 import time
 from collections import Counter
-import copy
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREY = (249, 249, 249)
 RED = (255,22,22)
 GREEN = (0,255,0)
-colors = [ WHITE, GREY, RED, GREEN]
+colors = [WHITE, GREY, RED, GREEN]
 pygame.init()
 x = 200
 y = 400
@@ -27,6 +26,10 @@ shape_horse = [[1,1,1],
                [0,0,1]]
 shape_z = [[1,1,0],
            [0,1,1]]
+
+def random_xset():
+    x = random.choice([x for x in range(20, 121) if x%20 == 0])
+    return x
 
 def rotate(shape):
     colums = len(shape[0])
@@ -66,23 +69,24 @@ def draw_shape(cords):
 
 def collision(retire, list_of_cords):
     for l in list_of_cords:
-        if l[1] + 20 >= 400:
+        if l[1] + 20 >= y:
             return False
     for i in retire:
         for z in i:
             for l in list_of_cords:
                 if (l[1] + 20 == z[1] and z[0] == l[0]):
                     return False
+
 def collision_sides(list_of_cords, move, retire):
     if move == "up" and len(retire) > 0:
         for i in retire:
             for z in i:
                 for l in list_of_cords:
-                    if (l[0] == z[0] and l[1] == z[1]) or l[0] <= 0 or l[0] >= 180 or l[1] >= 400:
+                    if (l[0] == z[0] and l[1] == z[1]) or l[0] <= 0 or l[0] >= x-20 or l[1] >= y:
                         return False
     elif move == "up" and len(retire) == 0:
         for l in list_of_cords:
-            if l[0] <= 0 or l[0] >= 180 or l[1] == 380:
+            if l[0] <= 0 or l[0] >= x-20 or l[1] == y-20:
                 return False
     elif move == "left" and len(retire) > 0:
         for i in retire:
@@ -94,50 +98,43 @@ def collision_sides(list_of_cords, move, retire):
         for i in retire:
             for z in i:
                 for i in list_of_cords:
-                    if i[0] == 180 or (i[0] + 20 == z[0] and i[1] == z[1]):
+                    if i[0] == x-20 or (i[0] + 20 == z[0] and i[1] == z[1]):
                         return False
     elif move == "right" and len(retire) == 0:
         for i in list_of_cords:
-            if i[0] == 180:
+            if i[0] == x-20:
                 return False
     elif move == "left" and len(retire) == 0:
         for i in list_of_cords:
             if i[0] == 0:
                 return False
 
-
 def burn(retire):
-    l = []
-    burn_row = - 1
-    for i in retire:
-        for z in i:
-            l.append(z[1])
-
-    l2 = Counter(l)
-    for i in l2:
-        if l2[i] == 10:
+    burn_row = - 247
+    l = Counter([z[1] for i in retire for z in i])
+    for i in l:
+        if l[i] == 10:
             burn_row = i
-
+            break
     if burn_row > 0:
-        rm = []
-        for i in retire:
-            for z in i:
-                if z[1] == burn_row:
-                    rm.append(z)
+        rm = ([z for i in retire for z in i if z[1] == burn_row])
         for i in rm:
-            for z in retire:
+           for z in retire:
                 if i in z:
                     z.remove(i)
         for i in retire:
             for z in i:
+                if i == []:
+                    retire.remove(i)
                 if z[1] < burn_row:
                     z[1] += 20
     return retire
 
 shapes = [ shape_p, shape_z, shape_horse, shape_b, shape_t]
 object_shape = random.choice(shapes)
-start_y = 20
-start_x = 100
+start_y = 0
+start_x = random_xset()
+
 retire = []
 last_shape = []
 top_blocks = []
@@ -166,7 +163,7 @@ while True:
                     retire.append(list_of_cords)
                     object_shape = random.choice(shapes)
                     start_y = 0
-                    start_x = 100
+                    start_x = random_xset()
                 else:
                     start_y += 20
 
@@ -185,12 +182,12 @@ while True:
         retire.append(list_of_cords)
         object_shape = random.choice(shapes)
         start_y = 0
-        start_x = 100
+        start_x = random_xset()
 
     start_y += 20
 
     if len(retire) > 0:
-        color = random.choice(colors)
+        color = RED
         top_blocks = []
         for i in burn(retire):
             for z in i:
@@ -198,5 +195,5 @@ while True:
                     top_blocks.append(z)
                 pygame.draw.rect(display, color, (z[0], z[1], 20, 20))
 
-    time.sleep(100 / 1000.0)
+    time.sleep(150 / 1000.0)
     pygame.display.update()
