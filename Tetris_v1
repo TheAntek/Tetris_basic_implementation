@@ -144,6 +144,11 @@ while True:
     display.fill(BLACK)
     list_of_cords = get_cords_shape(start_x, start_y, object_shape)
     draw_shape(list_of_cords)
+    
+    for i in list_of_cords:
+        if i in top_blocks:
+            pygame.quit()
+            sys.exit()
 
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
@@ -170,11 +175,6 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-
-        for i in list_of_cords:
-            if i in top_blocks:
-                pygame.quit()
-                sys.exit()
 
     list_of_cords = get_cords_shape(start_x, start_y, object_shape)
 
